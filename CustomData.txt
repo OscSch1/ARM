@@ -1,0 +1,1 @@
+#!/bin/bash\napt-get update\napt-get install nginx -y\nwget https://packages.microsoft.com/config/ubuntu/22.10/packages-microsoft-prod.deb/ndpkg -i packages-microsoft-prod.deb\nrm packages-microsoft-prod.deb\napt-get update && apt-get install -y dotnet-sdk-7.0\napt-get update && apt-get install -y aspnetcore-runtime-7.0
