@@ -77,7 +77,7 @@
     {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2020-05-01",
-      "name": "WebServer-ip",
+      "name": "ReverseProxy-ip",
       "location": "[parameters('location')]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic"
@@ -176,129 +176,204 @@
           }
         ]
       }
-   },
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2020-05-01",
+      "name": "BastionHost-nic",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'BastionHost-ip')]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vNetName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName2'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
           {
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2020-05-01",
-            "name": "BastionHost-nic",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-              "[resourceId('Microsoft.Network/publicIPAddresses', 'BastionPublicIP')]",
-              "[resourceId('Microsoft.Network/virtualNetworks', variables('vNetName'))]",
-              "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName2'))]"
-            ],
+            "name": "ipconfig1",
             "properties": {
-              "ipConfigurations": [
-                {
-                  "name": "ipconfig1",
-                  "properties": {
-                    "privateIPAllocationMethod": "Dynamic",
-                    "publicIPAddress": {
-                      "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'BastionHost-ip')]"
-                    },
-                    "subnet": {
-                      "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]"
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2021-11-01",
-            "name": "[variables('vmName')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-              "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
-            ],
-            "properties": {
-              "hardwareProfile": {
-                "vmSize": "[parameters('vmSize')]"
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'BastionHost-ip')]"
               },
-              "osProfile": {
-                "computerName": "[variables('vmName')]",
-                "adminUsername": "[parameters('adminUsername')]",
-                "linuxConfiguration": {
-                  "disablePasswordAuthentication": true,
-                  "ssh": {
-                    "publicKeys": [
-                      {
-                        "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
-                        "keyData": "[parameters('adminPublicKey')]"
-                      }
-                    ]
-                  }
-                },
-                "customData": "[base64(parameters('customData'))]"
-              },
-              "storageProfile": {
-                "imageReference": {
-                  "publisher": "Canonical",
-                  "offer": "UbuntuServer",
-                  "sku": "18_04-lts-gen2",
-                  "version": "latest"
-                },
-                "osDisk": {
-                  "createOption": "fromImage"
-                }
-              },
-              "networkProfile": {
-                "networkInterfaces": [
-                  {
-                    "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
-                  }
-                ]
-              }
-            }
-          },
-          {
-            "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2021-11-01",
-            "name": "BastionHost-vm",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-              "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
-            ],
-            "properties": {
-              "hardwareProfile": {
-                "vmSize": "[parameters('vmSize')]"
-              },
-              "osProfile": {
-                "computerName": "BastionHost",
-                "adminUsername": "[parameters('adminUsername')]",
-                "linuxConfiguration": {
-                  "disablePasswordAuthentication": true,
-                  "ssh": {
-                    "publicKeys": [
-                      {
-                        "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
-                        "keyData": "[parameters('adminPublicKey')]"
-                      }
-                    ]
-                  }
-                },
-                "customData": "[base64(parameters('customData'))]"
-              },
-              "storageProfile": {
-                "imageReference": {
-                  "publisher": "Canonical",
-                  "offer": "UbuntuServer",
-                  "sku": "18_04-lts-gen2",
-                  "version": "latest"
-                },
-                "osDisk": {
-                  "createOption": "fromImage"
-                }
-              },
-              "networkProfile": {
-                "networkInterfaces": [
-                  {
-                    "id": "[resourceId('Microsoft.Network/networkInterfaces', 'BastionHost-nic')]"
-                  }
-                ]
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]"
               }
             }
           }
         ]
       }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2020-05-01",
+      "name": "ReverseProxy-nic",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'ReverseProxy-ip')]",
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vNetName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName2'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'ReverseProxy-ip')]"
+              },
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2021-11-01",
+      "name": "[variables('vmName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('vmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('adminPublicKey')]"
+                }
+              ]
+            }
+          },
+          "customData": "[base64(parameters('customData'))]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "18_04-lts-gen2",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "fromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2021-11-01",
+      "name": "BastionHost-vm",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "BastionHost-vm",
+          "adminUsername": "[parameters('adminUsername')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('adminPublicKey')]"
+                }
+              ]
+            }
+          },
+          "customData": "[base64(parameters('customData'))]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "18_04-lts-gen2",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "fromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'BastionHost-nic')]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2021-11-01",
+      "name": "ReverseProxy-vm",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "ReverseProxy-vm",
+          "adminUsername": "[parameters('adminUsername')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('adminPublicKey')]"
+                }
+              ]
+            }
+          },
+          "customData": "[base64(parameters('customData'))]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "18_04-lts-gen2",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "fromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'ReverseProxy-nic')]"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
