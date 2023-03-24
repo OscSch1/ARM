@@ -16,8 +16,8 @@ cat << EOF > /etc/systemd/system/CICD2.service
 Description=CiCdDemo
 
 [Service]
-WorkingDirectory=/home/azureuser/actions-runner/_work/CICD/CICD
-ExecStart= dotnet /home/azureuser/actions-runner/_work/CICD/CICD/CICD.dll
+WorkingDirectory=/home/azureuser/actions-runner/_work/CICD2/CICD2
+ExecStart= dotnet /home/azureuser/actions-runner/_work/CICD2/CICD2/CICD2.dll
 
 [Install]
 WantedBy=multi-user.target
