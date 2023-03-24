@@ -36,8 +36,9 @@
     },
     "customData": {
       "type": "string",
-      "defaultValue": "@"
+      "defaultValue": "[base64(concat('#!/bin/bash\n\nwget -O - ', 'https://raw.githubusercontent.com/OscSch1/ARM/main/ReverseProxy.sh', ' | bash'))]"
     }
+
   },
   "variables": {
     "vNetName": "[concat(parameters('projectName'), '-vnet')]",
@@ -304,7 +305,7 @@
               ]
             }
           },
-          "customData": "[base64(parameters('customData'))]"
+          "customData": "[parameters('customData')]"
         },
         "storageProfile": {
           "imageReference": {
@@ -352,7 +353,7 @@
               ]
             }
           },
-          "customData": "[base64(parameters('customData'))]"
+          "customData": "[parameters('customData')]"
         },
         "storageProfile": {
           "imageReference": {
@@ -400,7 +401,7 @@
               ]
             }
           },
-          "customData": "[base64(parameters('customData'))]"
+          "customData": "[parameters('customData')]"
         },
         "storageProfile": {
           "imageReference": {
