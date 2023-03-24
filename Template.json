@@ -36,7 +36,7 @@
     },
     "customData": {
       "type": "string",
-      "defaultValue": "#!/bin/bash\nwget https://packages.microsoft.com/config/ubuntu/22.10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb\ndpkg -i packages-microsoft-prod.deb\nrm packages-microsoft-prod.deb\napt-get update && apt-get install -y dotnet-sdk-7.0\napt-get update && apt-get install -y aspnetcore-runtime-7.0"
+      "defaultValue": "@"
     }
   },
   "variables": {
@@ -87,10 +87,36 @@
       }
     },
     {
+      "type": "Microsoft.Network/applicationSecurityGroups",
+      "apiVersion": "2020-05-01",
+      "name": "BastionHost-asg",
+      "location": "[parameters('location')]",
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Network/applicationSecurityGroups",
+      "apiVersion": "2020-05-01",
+      "name": "ReverseProxy-asg",
+      "location": "[parameters('location')]",
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Network/applicationSecurityGroups",
+      "apiVersion": "2020-05-01",
+      "name": "AppServer-asg",
+      "location": "[parameters('location')]",
+      "properties": {}
+    },
+    {
       "comments": "Simple Network Security Group for subnet [variables('vNetSubnetName')]",
       "type": "Microsoft.Network/networkSecurityGroups",
       "apiVersion": "2020-05-01",
       "name": "[variables('networkSecurityGroupName2')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/applicationSecurityGroups', 'BastionHost-asg')]",
+        "[resourceId('Microsoft.Network/applicationSecurityGroups', 'ReverseProxy-asg')]",
+        "[resourceId('Microsoft.Network/applicationSecurityGroups', 'AppServer-asg')]"
+      ],
       "location": "[parameters('location')]",
       "properties": {
         "securityRules": [
@@ -129,7 +155,10 @@
       "name": "[variables('vNetName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName2'))]"
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName2'))]",
+        "[resourceId('Microsoft.Network/applicationSecurityGroups', 'BastionHost-asg')]",
+        "[resourceId('Microsoft.Network/applicationSecurityGroups', 'ReverseProxy-asg')]",
+        "[resourceId('Microsoft.Network/applicationSecurityGroups', 'AppServer-asg')]"
       ],
       "properties": {
         "addressSpace": {
@@ -158,7 +187,8 @@
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]",
         "[resourceId('Microsoft.Network/virtualNetworks', variables('vNetName'))]",
-        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName2'))]"
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName2'))]",
+        "[resourceId('Microsoft.Network/applicationSecurityGroups', 'AppServer-asg')]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -171,7 +201,12 @@
               },
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]"
-              }
+              },
+              "applicationSecurityGroups": [
+                {
+                  "id": "[resourceId('Microsoft.Network/applicationSecurityGroups', 'AppServer-asg')]"
+                }
+              ]
             }
           }
         ]
@@ -185,7 +220,8 @@
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', 'BastionHost-ip')]",
         "[resourceId('Microsoft.Network/virtualNetworks', variables('vNetName'))]",
-        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName2'))]"
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName2'))]",
+        "[resourceId('Microsoft.Network/applicationSecurityGroups', 'BastionHost-asg')]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -198,7 +234,12 @@
               },
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]"
-              }
+              },
+              "applicationSecurityGroups": [
+                {
+                  "id": "[resourceId('Microsoft.Network/applicationSecurityGroups', 'BastionHost-asg')]"
+                }
+              ]
             }
           }
         ]
@@ -212,7 +253,8 @@
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', 'ReverseProxy-ip')]",
         "[resourceId('Microsoft.Network/virtualNetworks', variables('vNetName'))]",
-        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName2'))]"
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName2'))]",
+        "[resourceId('Microsoft.Network/applicationSecurityGroups', 'ReverseProxy-asg')]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -225,7 +267,12 @@
               },
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vNetName'), variables('vNetSubnetName'))]"
-              }
+              },
+              "applicationSecurityGroups": [
+                {
+                  "id": "[resourceId('Microsoft.Network/applicationSecurityGroups', 'ReverseProxy-asg')]"
+                }
+              ]
             }
           }
         ]

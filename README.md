@@ -1,2 +1,2 @@
 # ARM
-ARM-Template WebServer, AppServer and BastionHost
+ARM-Template ReverseProxy, AppServer and BastionHost
