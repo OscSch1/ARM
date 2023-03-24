@@ -2,12 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "projectName": {
-      "type": "string",
-      "metadata": {
-        "description": "Specifies a name for generating resource names."
-      }
-    },
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
@@ -38,17 +32,16 @@
       "type": "string",
       "defaultValue": "[base64(concat('#!/bin/bash\n\nwget -O - ', 'https://raw.githubusercontent.com/OscSch1/ARM/main/ReverseProxy.sh', ' | bash'))]"
     }
-
   },
   "variables": {
-    "vNetName": "[concat(parameters('projectName'), '-vnet')]",
+    "vNetName": "[concat('Default', '-vnet')]",
     "vNetAddressPrefixes": "10.0.0.0/16",
     "vNetSubnetName": "default",
     "vNetSubnetAddressPrefix": "10.0.0.0/24",
-    "vmName": "[concat(parameters('projectName'), '-vm')]",
-    "publicIPAddressName": "[concat(parameters('projectName'), '-ip')]",
-    "networkInterfaceName": "[concat(parameters('projectName'), '-nic')]",
-    "networkSecurityGroupName2": "[concat(variables('vNetSubnetName'), '-nsg')]"
+    "vmName": "[concat('AppServer', '-vm')]",
+    "publicIPAddressName": "[concat('AppServer', '-ip')]",
+    "networkInterfaceName": "[concat('AppServer', '-nic')]",
+    "networkSecurityGroupName2": "[concat('Default', '-nsg')]"
   },
   "resources": [
     {
@@ -196,7 +189,8 @@
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "10.0.0.4",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
               },
@@ -229,7 +223,8 @@
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "10.0.0.5",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'BastionHost-ip')]"
               },
@@ -262,7 +257,8 @@
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "10.0.0.6",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'ReverseProxy-ip')]"
               },
