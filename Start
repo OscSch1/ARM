@@ -3,8 +3,11 @@ read resourceGroupName &&
 echo "Enter the location (i.e. centralus):" && 
 read location && 
 echo "Enter the administrator username:" && 
-read username && echo "Enter the SSH public key:" && 
-read key && 
+read username && 
+echo "Enter the SSH public key:" && 
+read key &&
+echo "Enter the token for the GitHub runner:" &&
+read token &&
 az group create --name $resourceGroupName --location "$location" && 
 az deployment group create --resource-group $resourceGroupName --template-uri https://raw.githubusercontent.com/OscSch1/ARM/main/Template.json --parameters adminUsername=$username adminPublicKey="$key" && 
 az vm show --resource-group $resourceGroupName --name "AppServer-vm" --show-details --query publicIps --output tsv

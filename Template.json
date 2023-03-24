@@ -31,6 +31,10 @@
     "customData": {
       "type": "string",
       "defaultValue": "[base64(concat('#!/bin/bash\n\nwget -O - ', 'https://raw.githubusercontent.com/OscSch1/ARM/main/ReverseProxy.sh', ' | bash'))]"
+    },
+    "customData2": {
+      "type": "string",
+      "defaultValue": "[base64(concat('#!/bin/bash\n\nwget -O - ', 'https://raw.githubusercontent.com/OscSch1/ARM/main/AppServer.sh', ' | bash'))]"
     }
   },
   "variables": {
@@ -301,7 +305,7 @@
               ]
             }
           },
-          "customData": "[parameters('customData')]"
+          "customData": "[parameters('customData2')]"
         },
         "storageProfile": {
           "imageReference": {
@@ -348,8 +352,7 @@
                 }
               ]
             }
-          },
-          "customData": "[parameters('customData')]"
+          }
         },
         "storageProfile": {
           "imageReference": {
