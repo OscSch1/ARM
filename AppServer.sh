@@ -5,7 +5,7 @@ rm packages-microsoft-prod.deb
 apt-get update && apt-get install -y dotnet-sdk-7.0
 apt-get update && apt-get install -y aspnetcore-runtime-7.0
 
-cat << EOF > /etc/systemd/system/ReverseProxy.service
+cat << EOF > /etc/systemd/system/CICD2.service
 [Unit]
 Description=CiCdDemo
 
@@ -22,6 +22,6 @@ curl -o actions-runner-linux-x64-2.303.0.tar.gz -L https://github.com/actions/ru
 tar xzf ./actions-runner-linux-x64-2.303.0.tar.gz
 ./config.sh --url https://github.com/OscSch1/CICD2 --token $token --unattended
 systemctl daemon-reload
-systemctl enable ReverseProxy.service
-systemctl start ReverseProxy.service
+systemctl enable CICD2.service
+systemctl start CICD2.service
 ./run.sh
