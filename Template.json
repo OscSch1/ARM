@@ -159,7 +159,7 @@
               "destinationPortRange": "22",
               "protocol": "Tcp",
               "sourcePortRange": "*",
-              "sourceAddressPrefixe": "*",
+              "sourceAddressPrefix": "*",
               "sourceApplicationSecurityGroupIds": [
                 "[resourceId('Microsoft.Network/applicationSecurityGroups', 'BastionHost-asg')]"
               ],
