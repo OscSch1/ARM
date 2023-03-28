@@ -126,14 +126,16 @@
               "direction": "Inbound",
               "destinationPortRange": "5000",
               "protocol": "Tcp",
-              "sourceAddressPrefix": "*",
               "sourcePortRange": "*",
-              "destinationAddressPrefix": "*",
-              "sourceApplicationSecurityGroupIds": [
-                "[resourceId('Microsoft.Network/applicationSecurityGroups', 'ReverseProxy-asg')]"
+              "sourceApplicationSecurityGroups": [
+                {
+                  "id": "[resourceId('Microsoft.Network/applicationSecurityGroups', 'ReverseProxy-asg')]"
+                }
               ],
-              "destinationApplicationSecurityGroupIds": [
-                "[resourceId('Microsoft.Network/applicationSecurityGroups', 'AppServer-asg')]"
+              "destinationApplicationSecurityGroups": [
+                {
+                  "id": "[resourceId('Microsoft.Network/applicationSecurityGroups', 'AppServer-asg')]"
+                }
               ]
             }
           },
@@ -151,6 +153,23 @@
             }
           },
           {
+            "name": "Allow-ssh-to-bastion",
+            "properties": {
+              "priority": 1003,
+              "access": "Allow",
+              "direction": "Inbound",
+              "destinationPortRange": "22",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "sourceAddressPrefix": "Internet",
+              "destinationApplicationSecurityGroups": [
+                {
+                  "id": "[resourceId('Microsoft.Network/applicationSecurityGroups', 'BastionHost-asg')]"
+                }
+              ]
+            }
+          },
+          {
             "name": "default-allow-22",
             "properties": {
               "priority": 1002,
@@ -159,13 +178,18 @@
               "destinationPortRange": "22",
               "protocol": "Tcp",
               "sourcePortRange": "*",
-              "sourceAddressPrefix": "*",
-              "sourceApplicationSecurityGroupIds": [
-                "[resourceId('Microsoft.Network/applicationSecurityGroups', 'BastionHost-asg')]"
+              "sourceApplicationSecurityGroups": [
+                {
+                  "id": "[resourceId('Microsoft.Network/applicationSecurityGroups', 'BastionHost-asg')]"
+                }
               ],
-              "destinationApplicationSecurityGroupIds": [
-                "[resourceId('Microsoft.Network/applicationSecurityGroups', 'AppServer-asg')]",
-                "[resourceId('Microsoft.Network/applicationSecurityGroups', 'ReverseProxy-asg')]"
+              "destinationApplicationSecurityGroups": [
+                {
+                  "id": "[resourceId('Microsoft.Network/applicationSecurityGroups', 'ReverseProxy-asg')]"
+                },
+                {
+                  "id": "[resourceId('Microsoft.Network/applicationSecurityGroups', 'AppServer-asg')]"
+                }
               ]
             }
           },
@@ -177,11 +201,12 @@
               "direction": "Inbound",
               "destinationPortRange": "80",
               "protocol": "Tcp",
-              "sourceAddressPrefix": "*",
               "sourcePortRange": "*",
-              "destinationAddressPrefix": "*",
-              "destinationApplicationSecurityGroupIds": [
-                "[resourceId('Microsoft.Network/applicationSecurityGroups', 'ReverseProxy-asg')]"
+              "sourceAddressPrefix": "Internet",
+              "destinationApplicationSecurityGroups": [
+                {
+                  "id": "[resourceId('Microsoft.Network/applicationSecurityGroups', 'ReverseProxy-asg')]"
+                }
               ]
             }
           }

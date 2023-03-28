@@ -7,5 +7,5 @@ read username &&
 echo "Enter the SSH public key:" && 
 read key &&
 az group create --name $resourceGroupName --location "$location" && 
-az deployment group create --resource-group $resourceGroupName --template-uri https://raw.githubusercontent.com/OscSch1/ARM/main/Template.json --parameters customData=@ReverseProxy.sh customData2=@AppServer.sh adminUsername=$username adminPublicKey="$key" && 
+az deployment group create --resource-group $resourceGroupName template-uri https://raw.githubusercontent.com/OscSch1/ARM/main/Template.json --parameters customData=@ReverseProxy.sh customData2=@AppServer.sh adminUsername=$username adminPublicKey="$key" && 
 az vm show --resource-group $resourceGroupName --name "AppServer-vm" --show-details --query publicIps --output tsv
