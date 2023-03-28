@@ -158,6 +158,7 @@
               "direction": "Inbound",
               "destinationPortRange": "22",
               "protocol": "Tcp",
+              "sourcePortRange": "*",
               "sourceApplicationSecurityGroupIds": [
                 "[resourceId('Microsoft.Network/applicationSecurityGroups', 'BastionHost-asg')]"
               ],
