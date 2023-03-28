@@ -1,5 +1,5 @@
 #!/bin/bash
-export GITHUB_TOKEN=$token
+export GITHUB_TOKEN=
 
 wget https://packages.microsoft.com/config/ubuntu/22.10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 dpkg -i packages-microsoft-prod.deb
@@ -11,7 +11,7 @@ mkdir actions-runner && cd actions-runner
 curl -o actions-runner-linux-x64-2.303.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.303.0/actions-runner-linux-x64-2.303.0.tar.gz
 tar xzf ./actions-runner-linux-x64-2.303.0.tar.gz
 chown -R azureuser:azureuser /actions-runner
-su azureuser -c "export GITHUB_TOKEN=$token && ./config.sh --url https://github.com/OscSch1/CICD2 --token $GITHUB_TOKEN --unattended"
+su azureuser -c "./config.sh --url https://github.com/OscSch1/CICD2 --token $GITHUB_TOKEN --unattended"
 
 
 cat << EOF > /etc/systemd/system/CICD2.service

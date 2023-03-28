@@ -119,6 +119,38 @@
       "properties": {
         "securityRules": [
           {
+            "name": "allow-reverseproxy-to-appserver",
+            "properties": {
+              "priority": 1000,
+              "access": "Allow",
+              "direction": "Inbound",
+              "destinationPortRange": "5000",
+              "protocol": "Tcp",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "sourceApplicationSecurityGroupIds": [
+                "[resourceId('Microsoft.Network/applicationSecurityGroups', 'ReverseProxy-asg')]"
+              ],
+              "destinationApplicationSecurityGroupIds": [
+                "[resourceId('Microsoft.Network/applicationSecurityGroups', 'AppServer-asg')]"
+              ]
+            }
+          },
+          {
+            "name": "Deny-All-Inbound",
+            "properties": {
+              "priority": 4000,
+              "access": "Deny",
+              "direction": "Inbound",
+              "destinationPortRange": "*",
+              "protocol": "*",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*"
+            }
+          },
+          {
             "name": "default-allow-22",
             "properties": {
               "priority": 1000,
@@ -126,13 +158,17 @@
               "direction": "Inbound",
               "destinationPortRange": "22",
               "protocol": "Tcp",
-              "sourceAddressPrefix": "*",
-              "sourcePortRange": "*",
-              "destinationAddressPrefix": "*"
+              "sourceApplicationSecurityGroupIds": [
+                "[resourceId('Microsoft.Network/applicationSecurityGroups', 'BastionHost-asg')]"
+              ],
+              "destinationApplicationSecurityGroupIds": [
+                "[resourceId('Microsoft.Network/applicationSecurityGroups', 'AppServer-asg')]",
+                "[resourceId('Microsoft.Network/applicationSecurityGroups', 'ReverseProxy-asg')]"
+              ]
             }
           },
           {
-            "name": "default-allow-80",
+            "name": "allow-inbound-http",
             "properties": {
               "priority": 1001,
               "access": "Allow",
@@ -141,7 +177,10 @@
               "protocol": "Tcp",
               "sourceAddressPrefix": "*",
               "sourcePortRange": "*",
-              "destinationAddressPrefix": "*"
+              "destinationAddressPrefix": "*",
+              "destinationApplicationSecurityGroupIds": [
+                "[resourceId('Microsoft.Network/applicationSecurityGroups', 'ReverseProxy-asg')]"
+              ]
             }
           }
         ]
